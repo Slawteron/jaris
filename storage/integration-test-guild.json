@@ -1,0 +1,16 @@
+{
+  "config": {
+    "panelChannelId": null,
+    "panelMessageId": null,
+    "categoryId": null,
+    "logChannelId": null,
+    "pedidosChannelId": null,
+    "staffRoleId": "staff-role",
+    "vendedorRoleId": null,
+    "panelImageUrl": "https://cdn.example.com/panel.png",
+    "dmEnabled": false
+  },
+  "tickets": [],
+  "pedidos": [],
+  "cooldowns": {}
+}

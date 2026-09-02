@@ -1,0 +1,29 @@
+{
+  "config": {
+    "panelChannelId": null,
+    "panelMessageId": null,
+    "categoryId": "cat-1",
+    "logChannelId": null,
+    "pedidosChannelId": null,
+    "staffRoleId": "staff-role",
+    "vendedorRoleId": "vendedor-role",
+    "panelImageUrl": null,
+    "dmEnabled": true
+  },
+  "tickets": [
+    {
+      "id": 1,
+      "numero": 1,
+      "categoria": "compra",
+      "channelId": "ticket-chan-1",
+      "userId": "user-123",
+      "userTag": "alice#0001",
+      "estado": "abierto",
+      "timestamp": 1788317244413,
+      "reclamadoPor": null,
+      "reclamadoTag": null
+    }
+  ],
+  "pedidos": [],
+  "cooldowns": {}
+}

@@ -1,0 +1,47 @@
+{
+  "config": {
+    "staffRoleId": "staff-role"
+  },
+  "tickets": [
+    {
+      "categoria": "compra",
+      "estado": "abierto"
+    },
+    {
+      "categoria": "dudas",
+      "estado": "abierto"
+    },
+    {
+      "categoria": "compra",
+      "estado": "cerrado"
+    }
+  ],
+  "pedidos": [
+    {
+      "id": 1,
+      "producto": "Robux",
+      "venta": "Robux",
+      "cantidad": "500 RB",
+      "precio": "$16.000 COP",
+      "metodo": "Nequi",
+      "pais": "Colombia",
+      "userId": "u1",
+      "channelId": "c1",
+      "timestamp": 1788317243752,
+      "estado": "pendiente"
+    },
+    {
+      "id": 2,
+      "producto": "Streaming",
+      "venta": "Prime",
+      "cantidad": "2",
+      "precio": "$12.000 COP",
+      "metodo": "Yape",
+      "pais": "Colombia",
+      "userId": "u2",
+      "channelId": "c2",
+      "timestamp": 1788317243752,
+      "estado": "cancelado"
+    }
+  ]
+}
