@@ -307,6 +307,15 @@ async function reclamarTicket(interaction, ticketId) {
     ticket.reclamadoPor = interaction.user.id; ticket.reclamadoTag = interaction.user.tag;
     store.save(interaction.guild.id, data);
 
+    // Cambiar permisos: quitar acceso al usuario normal
+    const canal = interaction.channel;
+    if (canal) {
+        await canal.permissionOverwrites.edit(ticket.userId, {
+            [PermissionFlagsBits.ViewChannel]: false,
+            [PermissionFlagsBits.SendMessages]: false,
+        }).catch(() => {});
+    }
+
     await interaction.message.edit({ components: [buildTicketRow(ticketId, true)] }).catch(() => {});
     
     const embed = new EmbedBuilder()
@@ -318,13 +327,14 @@ async function reclamarTicket(interaction, ticketId) {
             `▸ **Ticket:** #${ticketId}\n` +
             `▸ **Hora:** ${fechaColombia()}\n` +
             `**━━━━━━━━━━━━━━━━━━**\n` +
-            `✋ Este ticket ha sido reclamado por el staff. Comenzará la atención ahora.`
+            `✋ Este ticket ha sido reclamado por el staff. Comenzará la atención ahora.\n` +
+            `*El usuario ya no puede ver este canal (solo staff/mods).*`
         )
         .setFooter({ text: '💎 Industrias Rojas™ • Atención Premium' })
         .setTimestamp();
     
     await interaction.channel.send({ embeds: [embed] }).catch(() => {});
-    return safeReply(interaction, { content: '✅ Ticket reclamado correctamente.' });
+    return safeReply(interaction, { content: '✅ Ticket reclamado. El usuario ha sido removido del canal.' });
 }
 
 async function cerrarTicketConfirm(interaction, ticketId) {
@@ -334,8 +344,7 @@ async function cerrarTicketConfirm(interaction, ticketId) {
 
     const esAdmin = interaction.member.permissions.has(PermissionFlagsBits.Administrator);
     const esStaff = data.config.staffRoleId ? interaction.member.roles.cache.has(data.config.staffRoleId) : false;
-    const esDueno = interaction.user.id === ticket.userId;
-    if (!esAdmin && !esStaff && !esDueno) return safeReply(interaction, { content: '🚫 No tienes permiso para cerrar este ticket.' });
+    if (!esAdmin && !esStaff) return safeReply(interaction, { content: '🚫 Solo el staff puede cerrar tickets.' });
 
     return safeReply(interaction, {
         embeds: [new EmbedBuilder().setColor('#ED4245').setTitle('🔒 ¿Cerrar este ticket?').setDescription('**━━━━━━━━━━━━━━━━━━**\nEl canal se eliminará en 5 segundos tras confirmar.\n**━━━━━━━━━━━━━━━━━━**')],
