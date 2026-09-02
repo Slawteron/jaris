@@ -124,16 +124,22 @@ function buildTicketWelcomeEmbed(session, ticketId, numeroCategoria) {
     const label = cat.label === 'Comprar' ? 'Compra' : cat.label;
     const instrucciones = textoInstruccionesAdicionales(session ?? {});
     const usuario = session?.userTag ? session.userTag.split('#')[0] : 'usuario';
+    
+    const resumenLineas = resumenConfirmacion(session).split('\n')
+        .map(l => `  ▸ ${l}`)
+        .join('\n');
+    
     return new EmbedBuilder()
         .setColor(COLOR)
         .setTitle(`${LEON} Ticket #${ticketId} — ${label}`)
         .setDescription(
             `**¡Hola, ${usuario}!**\n\n` +
-            `Bienvenido a tu ticket de ${label.toLowerCase()}. Un miembro del staff te atenderá pronto.\n\n` +
+            `▸ Bienvenido a tu ticket de **${label.toLowerCase()}**.\n` +
+            `▸ Un miembro del staff te atenderá pronto.\n\n` +
             textoEsperaStaff() + '\n\n' +
-            `**─ INFORMACIÓN DE TU ${label.toUpperCase()} ─**\n` +
-            resumenConfirmacion(session) +
-            (instrucciones ? `\n\n**📋 Instrucciones adicionales:**\n${instrucciones}` : '')
+            `**━━━ INFORMACIÓN DE TU ${label.toUpperCase()} ━━━**\n` +
+            resumenLineas +
+            (instrucciones ? `\n\n**━━━ INSTRUCCIONES ADICIONALES ━━━**\n${instrucciones.split('\n').map(l => `  ▸ ${l}`).join('\n')}` : '')
         )
         .setFooter({ text: `${LEON} Industrias Rojas™ • Ticket #${numeroCategoria}` })
         .setTimestamp();
@@ -183,18 +189,18 @@ async function registrarPedido(guild, data, session, ticketChannel, ticketId) {
     data.pedidos.push(pedido);
 
     const embed = new EmbedBuilder().setColor(COLOR)
-        .setTitle(`${LEON}  Nueva orden registrada`)
+        .setTitle(`${LEON} Nueva orden registrada`)
         .setDescription(
-            `**#${n}**\n` +
-            `**Producto o servicio:** ${producto}\n` +
-            `**Venta:** ${venta}\n` +
-            `**Cantidad:** ${cantidad}\n` +
-            `**Precio:** ${precio}\n` +
-            `**Método:** ${pedido.metodo}\n` +
-            `**País:** ${pedido.pais}\n` +
-            `**Usuario:** <@${session.userId}>\n` +
-            `**Ticket:** <#${ticketChannel.id}>\n` +
-            `**Fecha:** ${fechaColombia()}`
+            `**━━━ ORDEN #${n} ━━━**\n\n` +
+            `▸ **Producto o servicio:** ${producto}\n` +
+            `▸ **Venta:** ${venta}\n` +
+            `▸ **Cantidad:** ${cantidad}\n` +
+            `▸ **Precio:** ${precio}\n` +
+            `▸ **Método:** ${pedido.metodo}\n` +
+            `▸ **País:** ${pedido.pais}\n` +
+            `▸ **Usuario:** <@${session.userId}>\n` +
+            `▸ **Ticket:** <#${ticketChannel.id}>\n` +
+            `▸ **Fecha:** ${fechaColombia()}`
         ).setTimestamp();
     console.log(`📨 [registrarPedido] Enviando embed de pedido #${n} al canal de pedidos`);
     await canal.send({ embeds: [embed] }).catch(() => {});
@@ -254,11 +260,15 @@ async function createTicketFromSession(interaction, session) {
     if (session.categoria === 'compra' && data.config.vendedorRoleId) menciones.push(`<@&${data.config.vendedorRoleId}>`);
     else if (data.config.staffRoleId) menciones.push(`<@&${data.config.staffRoleId}>`);
 
-    await canal.send({
+    const welcomeMsg = await canal.send({
         content: menciones.join(' '),
         embeds: [buildTicketWelcomeEmbed(session, ticketId, numCat)],
         components: [buildTicketRow(ticketId, false)],
-    }).catch(() => {});
+    }).catch(() => null);
+    
+    if (welcomeMsg && data.tickets[data.tickets.length - 1]) {
+        data.tickets[data.tickets.length - 1].welcomeMsgId = welcomeMsg.id;
+    }
 
     if (data.config.logChannelId) {
         const logCanal = guild.channels.cache.get(data.config.logChannelId);

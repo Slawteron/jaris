@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { STREAMING_NORMAL, STREAMING_REVENDEDOR, ROBUX_CANTIDADES, precioRobux, formatPrecio } = require('./data/pricing');
 const { COLOR, LEON } = require('./ui/panels');
+const afk = require('./afk');
 
 const MONEDAS = ['COP', 'MXN', 'ARS', 'USD', 'PEN'];
 const MONEDA_FLAG = { COP: 'CO', MXN: 'MX', ARS: 'AR', USD: 'US', PEN: 'PE' };
@@ -226,6 +227,19 @@ async function handlePrefixCommand(message, comando) {
     if (cmd === 'hora') return message.reply({ embeds: [embedHora()] }).catch(() => {});
     if (cmd === 'id') return message.reply({ embeds: [embedID(message.author.id)] }).catch(() => {});
     if (cmd === 'uptime') return message.reply(`⏱️ **Bot uptime:** ${Math.floor(message.client.uptime / 1000)} segundos`).catch(() => {});
+    
+    // COMANDO AFK
+    if (cmd === 'afk') {
+        const razon = args.length > 0 ? args.join(' ') : 'AFK sin razón especificada';
+        afk.setAFK(message.author.id, razon);
+        const embed = new EmbedBuilder()
+            .setColor('#FF6B6B')
+            .setTitle(`🔴 ${message.author.username} está en AFK`)
+            .setDescription(`▸ **Razón:** ${razon}\n▸ **Notificaré a quien te mencione**`)
+            .setFooter({ text: 'Usa cualquier comando para salir de AFK' })
+            .setTimestamp();
+        return message.reply({ embeds: [embed] }).catch(() => {});
+    }
     
     return false;
 }
