@@ -53,18 +53,22 @@ const CATEGORIAS = {
 
 function buildPanelEmbed(guildName, imageUrl = null) {
     const categoriasList = Object.values(CATEGORIAS)
-        .map(c => `${c.emoji} **${c.label}**\n  ${c.desc}`)
+        .map(c => `${c.emoji} **${c.label}**\n   ▸ ${c.desc}`)
         .join('\n\n');
 
     const e = new EmbedBuilder()
         .setColor(COLOR)
         .setTitle(`${LEON} BIENVENIDO A INDUSTRIAS ROJAS ${LEON}`)
         .setDescription(
-            `**¿En qué podemos ayudarte?**\n\n` +
-            `Selecciona la opción que se ajuste mejor a tu necesidad.\n\n` +
+            `**━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**\n` +
+            `**¿En qué podemos ayudarte?**\n` +
+            `**━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**\n\n` +
+            `▸ Selecciona la opción que se ajuste mejor a tu necesidad.\n\n` +
             `${categoriasList}\n\n` +
+            `**━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**\n` +
             `⏱️ **Respuesta rápida** • 🛡️ **Soporte 24/7** • 💎 **Atención premium**\n` +
-            `_Escribe \`?Info\` para ver todos los comandos disponibles_`
+            `_Escribe \`?Info\` para ver todos los comandos disponibles_\n` +
+            `**━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**`
         )
         .setFooter({
             text: `${guildName} • Industrias Rojas™ • Compromiso • Organización • Crecimiento`

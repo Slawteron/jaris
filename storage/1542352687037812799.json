@@ -1,7 +1,7 @@
 {
   "config": {
     "panelChannelId": "1542354486410870894",
-    "panelMessageId": "1543156112977559603",
+    "panelMessageId": "1544543083872395317",
     "categoryId": "1542352688036188242",
     "logChannelId": "1542355130077151303",
     "pedidosChannelId": "1542355009356697681",
@@ -108,6 +108,18 @@
       "reclamadoTag": "slawsin30",
       "cerradoPor": "slawsin30",
       "cerradoAt": 1788032966165
+    },
+    {
+      "id": 8,
+      "numero": 5,
+      "categoria": "compra",
+      "channelId": "1544543682953486447",
+      "userId": "983018865783111791",
+      "userTag": "slawsin30",
+      "estado": "abierto",
+      "timestamp": 1788318310490,
+      "reclamadoPor": null,
+      "reclamadoTag": null
     }
   ],
   "pedidos": [
@@ -175,7 +187,27 @@
       "ticketId": 6,
       "channelId": "1543156374517714956",
       "timestamp": 1787987551252
+    },
+    {
+      "id": 6,
+      "producto": "Robux",
+      "venta": "Robux",
+      "cantidad": "500 RBX",
+      "precio": "S/17.50 PEN",
+      "metodo": "Binance",
+      "pais": "Perú",
+      "userId": "983018865783111791",
+      "ticketId": 8,
+      "channelId": "1544543682953486447",
+      "timestamp": 1788318311162
     }
   ],
-  "cooldowns": {}
+  "cooldowns": {},
+  "afkUsers": {
+    "983018865783111791": {
+      "razon": "No disponible",
+      "timestamp": 1788318110893,
+      "tag": "slawsin30"
+    }
+  }
 }

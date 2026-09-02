@@ -26,13 +26,13 @@ function embedRobux() {
 function embedStaff() {
     return new EmbedBuilder().setColor(COLOR)
         .setTitle(`${LEON} POSTULACIONES PARA STAFF`)
-        .setDescription('**Buscamos personas maduras, responsables, profesionales y comprometidas con la comunidad.**\n\nUsa el panel de tickets y selecciona **Postulaciones** para aplicar al equipo.')
+        .setDescription('**▸ Buscamos personas maduras, responsables, profesionales y comprometidas con la comunidad.**\n\n▸ Usa el panel de tickets y selecciona **Postulaciones** para aplicar al equipo.')
         .addFields(
             { name: '📋 Requisitos', value: 'Madurez • Responsabilidad • Profesionalismo • Compromiso', inline: false },
             { name: '💰 Sueldo', value: 'Base de 80 Robux semanales + bonificaciones según rendimiento', inline: false },
             { name: '🎯 Grupos disponibles', value: '• Grupo de Invitaciones\n• Grupo de Tickets y Supervisión\n• Grupo de Actividades', inline: false }
         )
-        .setFooter({ text: '💎 Industrias Rojas™ • Compromiso • Organización • Crecimiento' })
+        .setFooter({ text: '💎 Industrias Rojas™ • Atención Premium' })
         .setTimestamp();
 }
 

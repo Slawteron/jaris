@@ -1,3 +1,17 @@
 ✅ Bot listo como Jarvis Bot#1107
 (node:5686) DeprecationWarning: The ready event has been renamed to clientReady to distinguish it from the gateway READY event and will only emit under that name in v15. Please use clientReady instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
+🔄 [wizard.handleInteraction] Processing interaction: customId=ir_panel_categoria, userId=983018865783111791
+🔄 [wizard.handleInteraction] Processing interaction: customId=ir_compra_tipo, userId=983018865783111791
+🔄 [wizard.handleInteraction] Processing interaction: customId=ir_robux_cantidad, userId=983018865783111791
+🔄 [wizard.handleInteraction] Processing interaction: customId=ir_pais, userId=983018865783111791
+🔄 [wizard.handleInteraction] Processing interaction: customId=ir_metodo, userId=983018865783111791
+🔄 [wizard.handleInteraction] Processing interaction: customId=ir_robux_entrega, userId=983018865783111791
+🔄 [wizard.handleInteraction] Processing interaction: customId=ir_confirm, userId=983018865783111791
+✅ [wizard.handleInteraction] User 983018865783111791 clicked CONFIRM button
+✔️ [wizard.onConfirmar] Usuario 983018865783111791 confirma creación de ticket (categoría: compra)
+🎫 [createTicketFromSession] Guardando ticket #8 (usuario: 983018865783111791, categoría: compra)
+📦 [registrarPedido] Creando pedido #6 para ticket #8
+📨 [registrarPedido] Enviando embed de pedido #6 al canal de pedidos
+📧 [registrarPedido] Enviando embed de pedido #6 al DM del usuario
+💾 [createTicketFromSession] Guardando data final (después de registrar pedido)

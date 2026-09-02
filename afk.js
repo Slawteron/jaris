@@ -41,10 +41,10 @@ function checkMentionAFK(message) {
     const lines = afkMentions.map(u => {
         const afk = getAFK(u.id);
         const tiempoTranscurrido = Math.floor((Date.now() - afk.timestamp) / 1000 / 60);
-        return `▸ **${u.username}** está en AFK desde hace **${tiempoTranscurrido} min** (${afk.reason})`;
+        return `▸ **${u.username}** está en AFK desde hace **${tiempoTranscurrido} min**\n  └─ 💭 *${afk.reason}*`;
     });
     
-    return `🔴 **USUARIO(S) EN AFK:**\n${lines.join('\n')}`;
+    return `**━━━━━━━━━━━━━━━━━━**\n🔴 **USUARIO(S) EN AFK:**\n**━━━━━━━━━━━━━━━━━━**\n${lines.join('\n')}\n**━━━━━━━━━━━━━━━━━━**`;
 }
 
 // Hook para mensaje: si user entra en AFK, quitarle
@@ -56,7 +56,7 @@ function handleMessageForAFK(message) {
     
     if (isAFK(message.author.id)) {
         removeAFK(message.author.id);
-        return `✅ ${message.author.username} ya no está en AFK (bienvenido de vuelta)`;
+        return `**━━━━━━━━━━━━━━━━━━**\n✅ **${message.author.username} ya no está en AFK**\n▸ ¡Bienvenido de vuelta!\n**━━━━━━━━━━━━━━━━━━**`;
     }
     
     const respuesta = checkMentionAFK(message);
