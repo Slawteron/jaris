@@ -45,8 +45,8 @@ const premium = require('./premiumCommands');
 const utility = require('./utilityCommands');
 const { isIgnorableError, safeReply, safeDefer, safeHandle } = require('./utils/safe');
 
-if (!process.env.TOKEN) {
-    console.error('❌ FATAL: falta la variable de entorno TOKEN (revisa tu .env).');
+if (!process.env.DISCORD_TOKEN) {
+    console.error('❌ FATAL: falta la variable de entorno DISCORD_TOKEN (revisa tu .env).');
     process.exit(1);
 }
 
@@ -236,7 +236,7 @@ client.on('messageCreate', async (message) => {
     catch (e) { if (!isIgnorableError(e)) console.warn('⚠️ [prefixCommand]', e?.message); }
 });
 
-client.login(process.env.TOKEN).catch(err => {
+client.login(process.env.DISCORD_TOKEN).catch(err => {
     console.error('❌ FATAL: no se pudo conectar:', err.message);
     process.exit(1);
 });

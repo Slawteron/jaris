@@ -300,7 +300,7 @@ const commands = [
     }
 ];
 
-const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 const guildId = process.env.GUILD_ID;
 const clientId = process.env.CLIENT_ID;
 
