@@ -308,8 +308,23 @@ async function reclamarTicket(interaction, ticketId) {
     store.save(interaction.guild.id, data);
 
     await interaction.message.edit({ components: [buildTicketRow(ticketId, true)] }).catch(() => {});
-    await interaction.channel.send({ content: `✋ Ticket reclamado por <@${interaction.user.id}>.` }).catch(() => {});
-    return safeReply(interaction, { content: '✅ Ticket reclamado.' });
+    
+    const embed = new EmbedBuilder()
+        .setColor(COLOR)
+        .setTitle(`${LEON} Ticket reclamado`)
+        .setDescription(
+            `**━━━━━━━━━━━━━━━━━━**\n` +
+            `▸ **Staff:** <@${interaction.user.id}>\n` +
+            `▸ **Ticket:** #${ticketId}\n` +
+            `▸ **Hora:** ${fechaColombia()}\n` +
+            `**━━━━━━━━━━━━━━━━━━**\n` +
+            `✋ Este ticket ha sido reclamado por el staff. Comenzará la atención ahora.`
+        )
+        .setFooter({ text: '💎 Industrias Rojas™ • Atención Premium' })
+        .setTimestamp();
+    
+    await interaction.channel.send({ embeds: [embed] }).catch(() => {});
+    return safeReply(interaction, { content: '✅ Ticket reclamado correctamente.' });
 }
 
 async function cerrarTicketConfirm(interaction, ticketId) {
@@ -323,7 +338,7 @@ async function cerrarTicketConfirm(interaction, ticketId) {
     if (!esAdmin && !esStaff && !esDueno) return safeReply(interaction, { content: '🚫 No tienes permiso para cerrar este ticket.' });
 
     return safeReply(interaction, {
-        embeds: [new EmbedBuilder().setColor('#ED4245').setTitle('🔒 ¿Cerrar este ticket?').setDescription('El canal se eliminará en 5 segundos tras confirmar.')],
+        embeds: [new EmbedBuilder().setColor('#ED4245').setTitle('🔒 ¿Cerrar este ticket?').setDescription('**━━━━━━━━━━━━━━━━━━**\nEl canal se eliminará en 5 segundos tras confirmar.\n**━━━━━━━━━━━━━━━━━━**')],
         components: [new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId(`ir_ticket_confirmcerrar_${ticketId}`).setLabel('Sí, cerrar').setStyle(ButtonStyle.Danger),
             new ButtonBuilder().setCustomId(`ir_ticket_cancelarcierre_${ticketId}`).setLabel('Cancelar').setStyle(ButtonStyle.Secondary),

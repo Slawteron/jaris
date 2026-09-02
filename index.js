@@ -73,8 +73,10 @@ client.once('ready', () => {
 
 // ─── /ticket-setup (PREMIUM VERSION) ────────────────────────────────────────
 async function handleTicketSetup(interaction) {
-    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator))
-        return safeReply(interaction, { content: '🚫 Solo administradores pueden usar este comando.' });
+    const esAdmin = interaction.member.permissions.has(PermissionFlagsBits.Administrator);
+    const esMod = interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers);
+    if (!esAdmin && !esMod)
+        return safeReply(interaction, { content: '🚫 Solo administradores y moderadores pueden usar este comando.' });
 
     const ok = await safeDefer(interaction, true);
     if (!ok) return;
