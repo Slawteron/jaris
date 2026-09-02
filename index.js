@@ -44,6 +44,7 @@ const admin = require('./adminCommands');
 const premium = require('./premiumCommands');
 const utility = require('./utilityCommands');
 const { isIgnorableError, safeReply, safeDefer, safeHandle } = require('./utils/safe');
+const afkModule = require('./afk');
 
 if (!process.env.DISCORD_TOKEN) {
     console.error('❌ FATAL: falta la variable de entorno DISCORD_TOKEN (revisa tu .env).');
@@ -227,6 +228,10 @@ client.on('interactionCreate', async (interaction) => {
 // ─── messageCreate (comandos de prefijo "?") ────────────────────────────────
 client.on('messageCreate', async (message) => {
     if (message.author.bot || !message.guild) return;
+    
+    // Check AFK status
+    const respuestaAFK = afkModule.handleMessageForAFK(message);
+    if (respuestaAFK) await message.reply(respuestaAFK).catch(() => {});
     if (ALLOWED_GUILDS.length > 0 && !ALLOWED_GUILDS.includes(message.guild.id)) return;
     if (!message.content.startsWith(PREFIX)) return;
 
