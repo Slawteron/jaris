@@ -7,6 +7,7 @@ const store = require('./data/store');
 const P = require('./ui/panels');
 const M = require('./ui/modals');
 const ticket = require('./ticket');
+const utility = require('./utilityCommands');
 const { safeReply, safeHandle } = require('./utils/safe');
 
 function stepEmbed(title, description) {
@@ -37,8 +38,8 @@ async function onPanelCategoria(interaction) {
         return showStep(interaction, 'Compra', '¿Qué deseas comprar?', [P.buildCompraTipoSelect()]);
     if (value === 'postulaciones')
         return showStep(interaction, 'Postulaciones', '¿Para qué te gustaría postularte?', [P.buildTrabajoSelect()]);
-    if (value === 'inversiones')
-        return interaction.showModal(M.modalInversion());
+    if (value === 'alianzas')
+        return interaction.showModal(M.modalAlianza());
     if (value === 'dudas')
         return interaction.showModal(M.modalDosPreguntas('ir_modal_dudas', 'Dudas o problemas', 'Describe tu problema o duda', 'Información adicional que debamos saber'));
     if (value === 'reportes')
@@ -121,22 +122,22 @@ async function onTrabajo(interaction) {
 // ─── Confirmar / retroceder / cancelar ────────────────────────────────────
 async function onConfirmar(interaction) {
     const session = store.getSession(interaction.user.id);
-    if (!session) return safeReply(interaction, { content: '⚠️ Tu sesión expiró (15 min de inactividad). Abre el panel de nuevo.' });    console.log(`✔️ [wizard.onConfirmar] Usuario ${interaction.user.id} confirma creación de ticket (categoría: ${session.categoria})`);    return ticket.createTicketFromSession(interaction, session);
+    if (!session) return safeReply(interaction, { content: '⚠️ Tu sesión expiró (15 min de inactividad). Abre el panel de nuevo.' });
+    console.log(`✔️ [wizard.onConfirmar] Usuario ${interaction.user.id} confirma creación de ticket (categoría: ${session.categoria})`);
+    return ticket.createTicketFromSession(interaction, session);
 }
 
 async function onBack(interaction) {
     const session = store.getSession(interaction.user.id);
     if (!session) return safeReply(interaction, { content: '⚠️ Tu sesión expiró. Abre el panel de nuevo.' });
     // Simplificación: reinicia el flujo de la categoría actual desde su primer paso
-    // (retroceder paso a paso individual requeriría guardar un historial completo;
-    // esto cubre el requisito de "corregir tu elección" del documento del cliente).
     store.resetSession(interaction.user.id, { userId: session.userId, categoria: session.categoria });
     if (session.categoria === 'compra')
         return interaction.update({ embeds: [stepEmbed('Compra', '¿Qué deseas comprar?')], components: [P.buildCompraTipoSelect()] });
     if (session.categoria === 'postulaciones')
         return interaction.update({ embeds: [stepEmbed('Postulaciones', '¿Para qué te gustaría postularte?')], components: [P.buildTrabajoSelect()] });
-    if (session.categoria === 'inversiones')
-        return interaction.showModal(M.modalInversion());
+    if (session.categoria === 'alianzas')
+        return interaction.showModal(M.modalAlianza());
     return interaction.update({ embeds: [stepEmbed('Panel', 'Vuelve a seleccionar una opción desde el panel principal, por favor.')], components: [] });
 }
 
@@ -154,10 +155,12 @@ async function onModalDosPreguntas(interaction, categoria) {
     return interaction.reply({ embeds: [ticket.buildConfirmEmbed(session)], components: [P.buildConfirmRow()], flags: 64 });
 }
 
-async function onModalInversion(interaction) {
-    const monto = interaction.fields.getTextInputValue('monto');
-    store.setSession(interaction.user.id, { userId: interaction.user.id, categoria: 'inversiones', monto });
-    return interaction.reply({ embeds: [stepEmbed('País', '¿De qué país eres?')], components: [P.buildPaisSelect()], flags: 64 });
+async function onModalAlianza(interaction) {
+    const propuesta = interaction.fields.getTextInputValue('propuesta');
+    const contacto = interaction.fields.getTextInputValue('contacto') || null;
+    store.setSession(interaction.user.id, { userId: interaction.user.id, categoria: 'alianzas', propuesta, contacto });
+    const session = store.getSession(interaction.user.id);
+    return interaction.reply({ embeds: [ticket.buildConfirmEmbed(session)], components: [P.buildConfirmRow()], flags: 64 });
 }
 
 async function onModalRobuxOtro(interaction) {
@@ -214,6 +217,11 @@ async function handleInteraction(interaction) {
             return safeHandle(interaction, () => ticket.ejecutarCierreTicket(interaction, parseInt(id.split('_').pop(), 10)));
         if (id.startsWith('ir_ticket_cancelarcierre_'))
             return safeHandle(interaction, () => interaction.update({ content: '✅ Cierre cancelado.', embeds: [], components: [] }));
+        // Botones del sorteo (creados por /sorteo en utilityCommands.js)
+        if (id.startsWith('sorteo_entrar_'))
+            return safeHandle(interaction, () => utility.handleSorteoEntrar(interaction, parseInt(id.split('_').pop(), 10)));
+        if (id.startsWith('sorteo_info_'))
+            return safeHandle(interaction, () => utility.handleSorteoInfo(interaction, parseInt(id.split('_').pop(), 10)));
     }
 
     if (interaction.isModalSubmit()) {
@@ -221,7 +229,7 @@ async function handleInteraction(interaction) {
             ir_modal_dudas: i => onModalDosPreguntas(i, 'dudas'),
             ir_modal_reportes: i => onModalDosPreguntas(i, 'reportes'),
             ir_modal_otro: i => onModalDosPreguntas(i, 'otro'),
-            ir_modal_inversion: onModalInversion,
+            ir_modal_alianza: onModalAlianza,
             ir_modal_robux_otro: onModalRobuxOtro,
             ir_modal_pais_otro: onModalPaisOtro,
             ir_modal_metodo_otro: onModalMetodoOtro,

@@ -43,7 +43,7 @@ async function handleSorteo(interaction) {
             { name: '⏱️ Duración', value: `<t:${Math.floor((Date.now() + durMs) / 1000)}:R>`, inline: true },
             { name: '👥 Participantes', value: `\`0/${maxParticipantes}\``, inline: true }
         )
-        .setImage('https://i.imgur.com/RHLSmgM.png')
+        .setImage('https://i.imgur.com/6FDLhpx.png')
         .setFooter({ text: `Sorteo #${sorteoId}` })
         .setTimestamp();
 

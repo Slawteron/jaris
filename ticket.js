@@ -124,11 +124,11 @@ function buildTicketWelcomeEmbed(session, ticketId, numeroCategoria) {
     const label = cat.label === 'Comprar' ? 'Compra' : cat.label;
     const instrucciones = textoInstruccionesAdicionales(session ?? {});
     const usuario = session?.userTag ? session.userTag.split('#')[0] : 'usuario';
-    
+
     const resumenLineas = resumenConfirmacion(session).split('\n')
         .map(l => `  ▸ ${l}`)
         .join('\n');
-    
+
     return new EmbedBuilder()
         .setColor(COLOR)
         .setTitle(`${LEON} Ticket #${ticketId} — ${label}`)
@@ -145,15 +145,19 @@ function buildTicketWelcomeEmbed(session, ticketId, numeroCategoria) {
         .setTimestamp();
 }
 
+// ─── Botones del ticket (reclamar / cerrar) ────────────────────────────────
+// IMPORTANTE: el emoji va SOLO en .setEmoji(), nunca repetido dentro del
+// .setLabel(), o Discord lo muestra duplicado (uno como ícono, otro como texto).
 function buildTicketRow(ticketId, reclamado = false) {
     return new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId(`ir_ticket_reclamar_${ticketId}`)
-            .setLabel(reclamado ? '✅ Reclamado' : '✋ Reclamar ticket')
+            .setLabel(reclamado ? 'Reclamado' : 'Reclamar ticket')
             .setEmoji(reclamado ? '✅' : '✋')
             .setStyle(reclamado ? ButtonStyle.Secondary : ButtonStyle.Success)
             .setDisabled(reclamado),
         new ButtonBuilder().setCustomId(`ir_ticket_cerrar_${ticketId}`)
-            .setLabel('🔒 Cerrar ticket')
+            .setLabel('Cerrar ticket')
+            .setEmoji('🔒')
             .setStyle(ButtonStyle.Danger),
     );
 }
@@ -265,7 +269,7 @@ async function createTicketFromSession(interaction, session) {
         embeds: [buildTicketWelcomeEmbed(session, ticketId, numCat)],
         components: [buildTicketRow(ticketId, false)],
     }).catch(() => null);
-    
+
     if (welcomeMsg && data.tickets[data.tickets.length - 1]) {
         data.tickets[data.tickets.length - 1].welcomeMsgId = welcomeMsg.id;
     }
@@ -294,6 +298,9 @@ async function safeUpdateOrReply(interaction, opts) {
 }
 
 // ─── Reclamar / cerrar ──────────────────────────────────────────────────────
+// Al reclamar: solo el mod que reclamó y el usuario deben poder ver el canal.
+// El resto del staff (rol staff / rol vendedor) pierde la vista. El usuario
+// SIEMPRE conserva su acceso — antes se le quitaba por error.
 async function reclamarTicket(interaction, ticketId) {
     const data = store.load(interaction.guild.id);
     const ticket = data.tickets.find(t => t.id === ticketId);
@@ -307,17 +314,35 @@ async function reclamarTicket(interaction, ticketId) {
     ticket.reclamadoPor = interaction.user.id; ticket.reclamadoTag = interaction.user.tag;
     store.save(interaction.guild.id, data);
 
-    // Cambiar permisos: quitar acceso al usuario normal
     const canal = interaction.channel;
     if (canal) {
+        // Quitar la vista a los roles generales de staff/vendedor
+        if (data.config.staffRoleId) {
+            await canal.permissionOverwrites.edit(data.config.staffRoleId, {
+                [PermissionFlagsBits.ViewChannel]: false,
+            }).catch(() => {});
+        }
+        if (data.config.vendedorRoleId) {
+            await canal.permissionOverwrites.edit(data.config.vendedorRoleId, {
+                [PermissionFlagsBits.ViewChannel]: false,
+            }).catch(() => {});
+        }
+        // El usuario SIEMPRE conserva su acceso al ticket
         await canal.permissionOverwrites.edit(ticket.userId, {
-            [PermissionFlagsBits.ViewChannel]: false,
-            [PermissionFlagsBits.SendMessages]: false,
+            [PermissionFlagsBits.ViewChannel]: true,
+            [PermissionFlagsBits.SendMessages]: true,
+            [PermissionFlagsBits.ReadMessageHistory]: true,
+        }).catch(() => {});
+        // El mod que reclamó recibe acceso explícito (por si no lo tenía ya por su rol)
+        await canal.permissionOverwrites.edit(interaction.user.id, {
+            [PermissionFlagsBits.ViewChannel]: true,
+            [PermissionFlagsBits.SendMessages]: true,
+            [PermissionFlagsBits.ReadMessageHistory]: true,
         }).catch(() => {});
     }
 
     await interaction.message.edit({ components: [buildTicketRow(ticketId, true)] }).catch(() => {});
-    
+
     const embed = new EmbedBuilder()
         .setColor(COLOR)
         .setTitle(`${LEON} Ticket reclamado`)
@@ -328,13 +353,13 @@ async function reclamarTicket(interaction, ticketId) {
             `▸ **Hora:** ${fechaColombia()}\n` +
             `**━━━━━━━━━━━━━━━━━━**\n` +
             `✋ Este ticket ha sido reclamado por el staff. Comenzará la atención ahora.\n` +
-            `*El usuario ya no puede ver este canal (solo staff/mods).*`
+            `*A partir de ahora solo tú, <@${interaction.user.id}>, pueden ver este canal — el resto del staff dejó de tener acceso.*`
         )
         .setFooter({ text: '💎 Industrias Rojas™ • Atención Premium' })
         .setTimestamp();
-    
+
     await interaction.channel.send({ embeds: [embed] }).catch(() => {});
-    return safeReply(interaction, { content: '✅ Ticket reclamado. El usuario ha sido removido del canal.' });
+    return safeReply(interaction, { content: '✅ Ticket reclamado. Solo tú y el usuario pueden ver este canal ahora.' });
 }
 
 async function cerrarTicketConfirm(interaction, ticketId) {

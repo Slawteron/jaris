@@ -1,9 +1,12 @@
 // ─── data/pricing.js ───────────────────────────────────────────────────────
 // Precios extraídos de las imágenes "?PrecioStreaming" y "?PrecioRevendedores"
-// que compartió el cliente. Revísalos antes de producción: los que llevan
-// el comentario "// VERIFICAR" no aparecían completos en el documento
-// original y quedaron estimados a partir de los pocos ejemplos que sí dio
-// el cliente (ej: Robux por país). Ajusta esos valores con el cliente.
+// que compartió el cliente. Los que llevan el comentario "// VERIFICAR" no
+// aparecían completos en el documento original y quedaron estimados a partir
+// de los pocos ejemplos que sí dio el cliente. Ajusta esos valores con él
+// antes de producción.
+//
+// NOTA: este archivo unifica las versiones duplicadas que había — borra
+// cualquier otra copia de data/pricing.js que tengas para no mezclarlas.
 
 const STREAMING_NORMAL = {
     prime: { label: 'Prime Video', emoji: '🎬',
@@ -47,9 +50,9 @@ const STREAMING_REVENDEDOR = {
         precios: { COP: 5524, MXN: 30.72, ARS: 2718, USD: 1.81, PEN: 6.09 } },
 };
 
-// El documento del cliente solo dio 2 ejemplos de Robux (1000RB=28.000 COP,
-// 500RB=16.000 COP, 500RB=7.800 ARS). Se completó la tabla con una tarifa
-// proporcional a esos ejemplos. // VERIFICAR con el cliente antes de usar.
+// El documento del cliente solo dio 2-3 ejemplos de Robux. Se completó la
+// tabla con una tarifa proporcional a esos ejemplos. // VERIFICAR con el
+// cliente antes de usar en producción.
 const ROBUX_CANTIDADES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 const ROBUX_TASA_POR_100 = { // VERIFICAR — derivado de 500RB=16.000 COP / 500RB=7.800 ARS
     COP: 2800, MXN: 15.60, ARS: 1560, USD: 1.04, PEN: 3.50
@@ -61,6 +64,7 @@ function precioRobux(cantidad, moneda) {
 
 const MONEDA_POR_PAIS = { colombia: 'COP', mexico: 'MXN', argentina: 'ARS', peru: 'PEN' };
 const SIMBOLO_MONEDA  = { COP: '$', MXN: '$', ARS: '$', USD: '$', PEN: 'S/' };
+const PAIS_EMOJI = { colombia: '🇨🇴', argentina: '🇦🇷', mexico: '🇲🇽', peru: '🇵🇪', otro: '🌍' };
 
 function formatPrecio(valor, moneda) {
     const simbolo = SIMBOLO_MONEDA[moneda] ?? '';
@@ -71,5 +75,5 @@ function formatPrecio(valor, moneda) {
 module.exports = {
     STREAMING_NORMAL, STREAMING_REVENDEDOR,
     ROBUX_CANTIDADES, ROBUX_TASA_POR_100, precioRobux,
-    MONEDA_POR_PAIS, SIMBOLO_MONEDA, formatPrecio
+    MONEDA_POR_PAIS, PAIS_EMOJI, SIMBOLO_MONEDA, formatPrecio
 };

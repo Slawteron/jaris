@@ -14,6 +14,32 @@ function modalDosPreguntas(customId, titulo, label1, label2) {
     return modal;
 }
 
+// ─── Alianzas ───────────────────────────────────────────────────────────────
+// Reemplaza al viejo modal de "Inversiones". La categoría del panel se
+// renombró a "Alianzas" (colaboraciones/partnerships), así que este modal
+// pide una propuesta de colaboración en vez de un monto a invertir.
+function modalAlianza() {
+    const modal = new ModalBuilder().setCustomId('ir_modal_alianza').setTitle('Alianzas — Industrias Rojas');
+    modal.addComponents(
+        new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('propuesta').setLabel('¿Qué tipo de alianza propones?')
+                .setPlaceholder('Ej: colaboración de contenido, promoción cruzada, etc.')
+                .setStyle(TextInputStyle.Paragraph).setRequired(true).setMaxLength(600)
+        ),
+        new ActionRowBuilder().addComponents(
+            new TextInputBuilder().setCustomId('contacto').setLabel('¿Cómo te contactamos? (opcional)')
+                .setPlaceholder('Servidor, redes sociales, correo, etc.')
+                .setStyle(TextInputStyle.Short).setRequired(false).setMaxLength(150)
+        )
+    );
+    return modal;
+}
+
+// ─── LEGACY: ya no está conectado a ningún flujo del panel. Se deja aquí
+// por si el cliente todavía lo necesita para otra cosa, pero NO se vuelve a
+// enlazar automáticamente: prometía "8% de ganancia mensual garantizada",
+// lenguaje típico de esquemas de inversión fraudulentos (tipo Ponzi).
+// Revisa con el cliente antes de reactivarlo.
 function modalInversion() {
     const modal = new ModalBuilder().setCustomId('ir_modal_inversion').setTitle('Inversiones — Industrias Rojas');
     modal.addComponents(
@@ -36,4 +62,4 @@ function modalTextoLibre(customId, titulo, label, placeholder = '') {
     return modal;
 }
 
-module.exports = { modalDosPreguntas, modalInversion, modalTextoLibre };
+module.exports = { modalDosPreguntas, modalAlianza, modalInversion, modalTextoLibre };

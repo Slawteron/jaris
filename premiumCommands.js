@@ -103,7 +103,7 @@ async function handleDashboard(interaction) {
             `**🏆 Top Rankings**\n` +
             `👑 Top vendedor: ${topVendedor ? `<@${topVendedor[0]}> (\`${topVendedor[1]}\` ventas)` : '`Sin datos`'}\n` +
             `🛒 Top cliente: ${topCliente ? `<@${topCliente[0]}> (\`${topCliente[1]}\` compras)` : '`Sin datos`'}`
-        ).setImage('https://i.imgur.com/RHLSmgM.png').setFooter({ text: 'Bot' }).setTimestamp();
+        ).setImage('https://i.imgur.com/6FDLhpx.png').setFooter({ text: 'Bot' }).setTimestamp();
 
     return safeReply(interaction, { embeds: [embed] });
 }
@@ -159,7 +159,7 @@ async function handleFactura(interaction) {
             `Cliente: <@${venta.clienteId}>\n` +
             `Vendedor: <@${venta.vendedorId}>\n\n` +
             `${venta.notas ? `**Notas:** ${venta.notas}` : ''}`
-        ).setImage('https://i.imgur.com/RHLSmgM.png').setFooter({ text: `${interaction.guild.name} · Bot` }).setTimestamp(venta.timestamp);
+        ).setFooter({ text: `${interaction.guild.name} · Bot` }).setTimestamp(venta.timestamp);
 
     const user = await interaction.client.users.fetch(venta.clienteId).catch(() => null);
     if (user && venta.clienteId !== interaction.user.id) {
@@ -168,7 +168,6 @@ async function handleFactura(interaction) {
 
     return safeReply(interaction, { embeds: [embed], content: '✅ Factura enviada al cliente por DM.' });
 }
-
 // ─── /top ───────────────────────────────────────────────────────────────────
 async function handleTop(interaction) {
     const data = store.load(interaction.guild.id);
@@ -240,7 +239,7 @@ async function handleServidorStats(interaction) {
             `**🎫 Tickets**\n` +
             `Cerrados: \`${ticketsCerrados}\`\n` +
             `Abiertos: \`${(tdata.tickets ?? []).filter(t => t.estado === 'abierto').length}\``
-        ).setImage('https://i.imgur.com/RHLSmgM.png').setFooter({ text: 'Bot' }).setTimestamp();
+        ).setImage('https://i.imgur.com/6FDLhpx.png').setFooter({ text: 'Bot' }).setTimestamp();
 
     return safeReply(interaction, { embeds: [embed] });
 }

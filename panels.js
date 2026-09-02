@@ -1,44 +1,82 @@
 // ─── ui/panels.js ──────────────────────────────────────────────────────────
+// PREMIUM VERSION
 const {
     EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle,
     StringSelectMenuBuilder, StringSelectMenuOptionBuilder
 } = require('discord.js');
-const { STREAMING_NORMAL } = require('./data/pricing');
+const { STREAMING_NORMAL } = require('../data/pricing');
 
 const LEON = '🦁';
 const COLOR = '#C0392B'; // rojo Industrias Rojas
-const BANNER_URL = null; // pon aquí la URL del banner/logo si tienes una
+const PREMIUM_COLOR = '#DC143C';
+const ACCENT_GOLD = '#FFD700';
 
-// ─── Categorías del panel principal (según spec del cliente) ─────────────
+// ─── Categorías del panel principal ────────────────────────────────────────
 const CATEGORIAS = {
-    compra:        { emoji: '🛒', label: 'Compra',           desc: 'Selecciona esta opción si deseas comprar algún producto o servicio de nuestra tienda.' },
-    dudas:         { emoji: '❓', label: 'Dudas o problemas', desc: 'Preguntas sobre productos, servicios, empresa o algún problema que tengas.' },
-    inversiones:   { emoji: '💹', label: 'Inversiones',       desc: 'Selecciona esta opción si deseas comprar acciones de nuestra empresa e invertir en ella.' },
-    reportes:      { emoji: '⚠️', label: 'Reportes',          desc: 'Reporta un error, un problema, o a un usuario/staff.' },
-    postulaciones: { emoji: '📋', label: 'Postulaciones',     desc: '¿Te gustaría conseguir un trabajo con nosotros y ganar Robux o dinero?' },
-    otro:          { emoji: '🔔', label: 'Otro',              desc: 'Si no encuentras tu situación en las opciones anteriores.' },
+    compra: {
+        emoji: '🛒', label: 'Comprar',
+        desc: '¿Estás interesado en adquirir nuestros productos o servicios?',
+    },
+    dudas: {
+        emoji: '❓', label: 'Dudas o Problemas',
+        desc: '¿Tienes alguna pregunta o inconveniente que necesite atención?',
+    },
+    alianzas: {
+        emoji: '🤝', label: 'Alianzas',
+        desc: '¿Quieres proponer una colaboración o formar parte de algo juntos?',
+    },
+    reportes: {
+        emoji: '⚠️', label: 'Reportes',
+        desc: '¿Necesitas reportar algo o a alguien?',
+    },
+    postulaciones: {
+        emoji: '📋', label: 'Postulaciones',
+        desc: '¿Te gustaría formar parte del equipo o trabajar con nosotros?',
+    },
+    otro: {
+        emoji: '🔔', label: 'Otro',
+        desc: '¿Otra consulta que no encaja en las opciones anteriores?',
+    },
 };
 
-function buildPanelEmbed(guildName) {
+function buildPanelEmbed(guildName, imageUrl = null) {
+    const categoriasList = Object.values(CATEGORIAS)
+        .map(c => `${c.emoji} **${c.label}**\n   ▸ ${c.desc}`)
+        .join('\n\n');
+
     const e = new EmbedBuilder()
         .setColor(COLOR)
-        .setTitle(`${LEON}  BIENVENIDO A INDUSTRIAS ROJAS`)
+        .setTitle(`${LEON} BIENVENIDO A INDUSTRIAS ROJAS ${LEON}`)
         .setDescription(
-            `¿En qué podemos ayudarte?\n${'─'.repeat(28)}\n` +
-            Object.values(CATEGORIAS).map(c => `${c.emoji}  **${c.label}**\n╰➤ ${c.desc}`).join('\n\n')
+            `**━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**\n` +
+            `**¿En qué podemos ayudarte?**\n` +
+            `**━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**\n\n` +
+            `▸ Selecciona la opción que se ajuste mejor a tu necesidad.\n\n` +
+            `${categoriasList}\n\n` +
+            `**━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**\n` +
+            `⏱️ **Respuesta rápida** • 🛡️ **Soporte 24/7** • 💎 **Atención premium**\n` +
+            `_Escribe \`?Info\` para ver todos los comandos disponibles_\n` +
+            `**━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**`
         )
-        .setFooter({ text: `${guildName} · Industrias Rojas ${LEON}` })
+        .setFooter({ text: `${guildName} • Industrias Rojas™ • Compromiso • Organización • Crecimiento` })
         .setTimestamp();
-    if (BANNER_URL) e.setImage(BANNER_URL);
+
+    if (imageUrl) e.setImage(imageUrl);
     return e;
 }
 
 function buildPanelRow() {
     const menu = new StringSelectMenuBuilder()
         .setCustomId('ir_panel_categoria')
-        .setPlaceholder('Selecciona la opción que más se acople a tu necesidad...')
+        .setPlaceholder('✨ Elige la opción que mejor se adapte a tu necesidad...')
+        .setMinValues(1)
+        .setMaxValues(1)
         .addOptions(Object.entries(CATEGORIAS).map(([value, c]) =>
-            new StringSelectMenuOptionBuilder().setLabel(c.label).setDescription(c.desc.slice(0, 95)).setEmoji(c.emoji).setValue(value)
+            new StringSelectMenuOptionBuilder()
+                .setLabel(c.label)
+                .setDescription(c.desc.slice(0, 95))
+                .setEmoji(c.emoji)
+                .setValue(value)
         ));
     return new ActionRowBuilder().addComponents(menu);
 }
@@ -108,7 +146,7 @@ function buildRobuxCantidadSelect() {
     const { ROBUX_CANTIDADES } = require('../data/pricing');
     const menu = new StringSelectMenuBuilder().setCustomId('ir_robux_cantidad').setPlaceholder('¿Qué cantidad deseas?')
         .addOptions([
-            ...ROBUX_CANTIDADES.map(n => new StringSelectMenuOptionBuilder().setLabel(`${n} RB`).setValue(String(n))),
+            ...ROBUX_CANTIDADES.map(n => new StringSelectMenuOptionBuilder().setLabel(`${n} RBX`).setValue(String(n))),
             new StringSelectMenuOptionBuilder().setLabel('Más de 1000').setEmoji('➕').setValue('mas'),
             new StringSelectMenuOptionBuilder().setLabel('Otra cantidad').setEmoji('✏️').setValue('otro'),
         ]);
@@ -140,16 +178,29 @@ function buildTrabajoSelect() {
 }
 
 // ─── Botones: confirmar / volver / cancelar ───────────────────────────────
+// El emoji va SOLO en .setEmoji() — repetirlo en el label lo duplica visualmente.
 function buildConfirmRow() {
     return new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId('ir_confirm').setLabel('Continuar').setStyle(ButtonStyle.Success).setEmoji('✅'),
-        new ButtonBuilder().setCustomId('ir_back').setLabel('Retroceder y cambiar').setStyle(ButtonStyle.Secondary).setEmoji('↩️'),
-        new ButtonBuilder().setCustomId('ir_cancel').setLabel('Cancelar').setStyle(ButtonStyle.Danger).setEmoji('✖️'),
+        new ButtonBuilder()
+            .setCustomId('ir_confirm')
+            .setLabel('Continuar')
+            .setEmoji('✅')
+            .setStyle(ButtonStyle.Success),
+        new ButtonBuilder()
+            .setCustomId('ir_back')
+            .setLabel('Retroceder')
+            .setEmoji('↩️')
+            .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+            .setCustomId('ir_cancel')
+            .setLabel('Cancelar')
+            .setEmoji('✖️')
+            .setStyle(ButtonStyle.Danger),
     );
 }
 
 module.exports = {
-    LEON, COLOR, CATEGORIAS,
+    LEON, COLOR, PREMIUM_COLOR, ACCENT_GOLD, CATEGORIAS,
     buildPanelEmbed, buildPanelRow, buildPaisSelect, buildMetodoSelect,
     buildStreamingServicioSelect, buildCompraTipoSelect, buildStreamingCantidadSelect,
     buildRobuxCantidadSelect, buildRobuxEntregaSelect, buildTrabajoSelect, buildConfirmRow,
